@@ -1,8 +1,22 @@
 <?php 
    session_start();
 ?>
+<style>
+
+  .body {
+    font-family: sans-serif;;
+  }
+</style>
 Click here to clean <a href = "logout.php" tite = "Logout">LogOut</a>.
 <?php
+
+    if(!isset($_GET['imageId']) || $_GET['imageId'] == '') {
+      echo '<br/><br/><br/><h3>Image ID missing</h3>';
+      return;
+    }
+
+    $imageId = $_GET['imageId'];
+    echo $imageId;
     if (isset($_SESSION['username'])) {
         $servername = "localhost:3309";
         $username = "root";
@@ -17,7 +31,7 @@ Click here to clean <a href = "logout.php" tite = "Logout">LogOut</a>.
             die("Connection failed: " . $conn->connect_error);
           }
 
-          $sql = "SELECT * FROM cameraupload WHERE id=1";
+          $sql = "SELECT * FROM cameraupload WHERE id=".$imageId;
           $result = $conn->query($sql);
           $myObj = new stdClass();
           if ($result->num_rows > 0) {
@@ -32,8 +46,7 @@ Click here to clean <a href = "logout.php" tite = "Logout">LogOut</a>.
             echo "0 results";
           }
           
-          $myJSON = json_encode($myObj);
-          echo $myJSON;
+          echo '<img src="data:image/png;base64, '.$myObj->base64.'"/>';
           $conn->close();
     
 
@@ -41,6 +54,6 @@ Click here to clean <a href = "logout.php" tite = "Logout">LogOut</a>.
 
     } else {
         session_destroy();
-        header("Location: index.php");
+        header("Location: index.php?imageId=".$imageId);
     }
 ?>
